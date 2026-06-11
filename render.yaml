@@ -10,3 +10,5 @@ services:
         value: tickets.settings.demo
       - key: SECRET
         generateValue: true
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
