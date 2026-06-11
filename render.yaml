@@ -1,0 +1,13 @@
+services:
+  - type: web
+    plan: free
+    name: tickets
+    runtime: python
+    buildCommand: "python -m pip install -r requirements/demo.txt"
+    preDeployCommand: "python manage.py migrate --settings=tickets.settings.demo"
+    startCommand: "python -m gunicorn tickets.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: tickets.settings.demo
+      - key: SECRET
+        generateValue: true
