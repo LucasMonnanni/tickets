@@ -44,3 +44,5 @@ class AutoLoginMiddleware:
 					login(request, user)
 			except Exception:
 				pass
+		response = self.get_response(request)
+		return response
