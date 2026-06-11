@@ -1,0 +1,30 @@
+{% extends './base.html' %}
+{% block head %}
+<title>Tickets</title>
+{% endblock %}
+{% block body %}
+{% load static %}
+<div class=" container-lg justify-content-center">
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4 py-5">
+            <form method="post" action="{{request.get_full_path_info}}">
+                {{ form.media }}
+                {% csrf_token %}
+                <div class="row my-4">
+                    <label for="{{form.username.id_for_label}}" class="form-label">{{ form.username.label }}</label>
+                    <input type="text" name="username" autocomplete="username" maxlength="64" required="" id="{{form.username.id_for_label}}" class="form-control">
+                </div>
+                <div class="row my-4">
+                    <label for="{{form.password.id_for_label}}" class="form-label">{{ form.password.label }}</label>
+                    <input type="password" name="password" autocomplete="current-password" required="" id="{{form.password.id_for_label}}" class="form-control">
+                </div>
+                <div class="row my-4">
+                    <button class="mb-5 btn btn-secondary" type="submit">Ingresar</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-4"></div>
+    </div>
+</div>
+{% endblock %}

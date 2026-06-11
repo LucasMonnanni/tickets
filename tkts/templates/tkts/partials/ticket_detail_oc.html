@@ -1,0 +1,60 @@
+<div id="ocPartial">
+{% if object.oc %}
+<div class="row my-4 facturacion-section">
+{% else %}
+<button type="button" class="btn btn-secondary" onclick="document.getElementById('ocFormSection').style.display='flex'; this.style.display='none'">
+    Agregar información de facturacion
+</button>
+<div class="row my-4 facturacion-section" id="ocFormSection" style="display: none;">
+{% endif %}
+    {% csrf_token %}
+    <div class="col-md-2">
+        <label for="{{ oc_form.numero.id_for_label }}" class="form-label">{{ oc_form.numero.label }}</label>
+        {{ oc_form.numero }}
+    </div>
+    <div class="col-md-3">
+        <label for="{{ oc_form.costo.id_for_label }}" class="form-label">{{ oc_form.costo.label }}</label>
+        <div class="input-group">
+        {{ oc_form.moneda }}
+        {{ oc_form.costo }}
+        </div>
+    </div>
+    <div class="col-md-5">
+        <label for="{{ oc_form.contratista.id_for_label }}" class="form-label">{{ oc_form.contratista.label }}</label>
+        {{ oc_form.contratista }}
+    </div>
+    <div class="col-md-2">
+        <label for="{{ oc_form.condicion.id_for_label }}" class="form-label">{{ oc_form.condicion.label }}</label>
+        {{ oc_form.condicion }}
+    </div>
+</div>
+{% if oc_form.non_field_errors %}
+<div class="row my-4">
+    {% for error in oc_form.non_field_errors %}
+    <p class="text-danger">{{error}}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let form = document.querySelector('#ticketForm')
+    let costo = document.querySelector('#{{ oc_form.costo.id_for_label }}');
+    costo.lastValue = costo.value;
+    if (costo) {
+        costo.addEventListener('blur', ()=> {
+            costo.type = '';
+            costo.lastValue = costo.value;
+            costo.value = costo.value == '' ? '' : (+costo.value).toLocaleString();
+        });
+        costo.addEventListener('focus', ()=> {
+            costo.type = 'number';
+            costo.value = costo.lastValue;
+        })
+        form.addEventListener('submit', function() {
+            costo.type = 'number';
+            costo.value = costo.lastValue;
+        });
+    }
+});
+</script>
+</div>

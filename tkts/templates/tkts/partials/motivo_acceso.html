@@ -1,0 +1,169 @@
+{% load static %}
+
+<div class="row my-4">
+	<p>Para más información consulte nuestra <a href="{% url 'politica' %}">política de acceso</a></p>
+	<div class="col-md-4">
+		<label for="{{ acceso_form.fecha_desde.id_for_label }}" class="form-label">Fechas</label>
+		<div class="input-group">
+			<span class="input-group-text">De</span>
+			{{ acceso_form.fecha_desde }}
+			<span class="input-group-text">a</span>
+			{{ acceso_form.fecha_hasta }}
+		</div>
+	</div>
+	<div class="col-md-4">
+		<label class="form-label">Franja horaria</label>
+		<div class="input-group">
+			<span class="input-group-text">De</span>
+			{{ acceso_form.hora_desde }}
+			<span class="input-group-text">a</span>
+			{{ acceso_form.hora_hasta }}
+		</div>
+		<div id="franja_feedback"></div>
+	</div>
+	<div class="col-md-4">
+		<label for="{{ acceso_form.empresa.id_for_label }}" class="mb-2">{{ acceso_form.empresa.label }}</label>
+		{{ acceso_form.empresa }}
+	</div>
+</div>
+<div class="row my-4">
+	<div class="col-md">
+		<label class="form-label">Personal</label>
+		<p>Detalle nombre completo, DNI y teléfono (incluido el código de área) del personal a ingresar. Puede pegar una tabla copiada de Excel.</p>
+		<div class="table-responsive">
+			<table id="personal-table" class="table table-sm table-borderless">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Apellido</th>
+						<th>DNI</th>
+						<th>Teléfono</th>
+						<th class="border-0"></th>
+					</tr>
+				</thead>
+				<tbody id="personal-tbody">
+					{% for form in personal_formset %}
+					<tr>
+						<td>{{ form.nombre }}</td>
+						<td>{{ form.apellido }}</td>
+						<td>{{ form.dni }}</td>
+						<td>{{ form.telefono }}</td>
+						<td class="border-0 align-middle text-center px-0"><button type="button" class="btn btn-sm btn-outline-danger delete-btn"><i class="bi-x-circle"></i></button></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		{{ personal_formset.management_form }}
+	</div>
+</div>
+<div class="row my-4" >
+	<div class="col-md-4">
+		<div class="input-group mb-3 w-100">
+			<div class="input-group-text">
+				<input 
+				type="checkbox"
+				name="{{ acceso_form.afectacion.html_name }}"
+				id="{{ acceso_form.afectacion.id_for_label }}"
+				class="form-check-input {{ acceso_form.afectacion.css_classes }}"
+				value="True">
+			</div>
+			<span class="input-group-text flex-fill">
+				{{ acceso_form.afectacion.label }}
+			</span>
+		  </div>
+	</div>
+	<div class="col-md-4">
+		<div class="input-group mb-3">
+			<div class="input-group-text">
+				<input 
+				type="checkbox"
+				name="{{ acceso_form.riesgo_electrico.html_name }}"
+				id="{{ acceso_form.riesgo_electrico.id_for_label }}"
+				class="form-check-input {{ acceso_form.riesgo_electrico.css_classes }}"
+				value="True">
+			</div>
+			<span class="input-group-text flex-fill">
+				{{ acceso_form.riesgo_electrico.label }}
+			</span>
+		  </div>
+	</div>
+	<div class="col-md-4">
+		<div class="input-group mb-3">
+			<div class="input-group-text">
+				<input 
+				type="checkbox"
+				name="{{ acceso_form.altura.html_name }}"
+				id="{{ acceso_form.altura.id_for_label }}"
+				class="form-check-input {{ acceso_form.altura.css_classes }}"
+				value="True">
+			</div>
+			<span class="input-group-text flex-fill">
+				{{ acceso_form.altura.label }}
+			</span>
+		  </div>
+	</div>
+</div>
+<div class="row my-4" >
+	<div class="col-md-8">
+		<label id="problema" for="{{form.problema.id_for_label}}" class="form-label">Tareas a realizar</label>
+		{{form.problema}}
+		<div id="problema_feedback">{{form.problema.errors}}</div>
+	</div>
+	<div class="col-md-4">
+		<label for="{{form.link.id_for_label}}" class="form-label">{{form.link.label}}</label>
+		<input
+			type={{form.link.widget_type}}
+			name="{{form.link.html_name}}"
+			id="{{form.link.id_for_label}}"
+			class="form-control {{form.link.css_classes}}"
+			required max_length="200"
+			{% if form.link.value != None %} value="{{ form.link.value }}"{% endif %}>
+		</input>
+		<div id="link_feedback">{{form.link.errors}}</div>
+		<p>{{form.link.help_text}}</p>
+	</div>
+</div>
+
+
+	
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% if theme == "dark" %}
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+	const PREFIX = "{{ personal_formset.prefix }}";
+	htmx.onLoad((content) => {
+		initAcceso();
+
+		var fechaDesde = document.getElementById("{{ acceso_form.fecha_desde.id_for_label }}");
+		var fechaHasta = document.getElementById("{{ acceso_form.fecha_hasta.id_for_label }}");
+		var horaDesde = document.getElementById("{{ acceso_form.hora_desde.id_for_label }}");
+		var horaHasta = document.getElementById("{{ acceso_form.hora_hasta.id_for_label }}");
+
+		if (fechaDesde && fechaHasta) {
+			fechaDesde.addEventListener('change', function() {
+				var maxDate = fechaDesde.valueAsDate;
+				maxDate.setDate(maxDate.getDate() + 30);
+				fechaHasta.max = maxDate.toISOString().split('T')[0];
+				fechaHasta.min = this.value;
+				if (fechaHasta.value) {
+					if (fechaHasta.value < this.value) {
+						fechaHasta.value = this.value;
+					} else if (fechaHasta.value > fechaHasta.max) {
+						fechaHasta.value = fechaHasta.max;
+					}
+				}
+			});
+		}
+	});
+
+</script>
+
+<style>
+	#personal-table input { border: none; }
+	#personal-table input:focus { border: 1px solid #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
+	#personal-table th:not(:last-child), #personal-table td:not(:last-child) { border: 1px solid #dee2e6; }
+	#personal-table td:last-child { border: none !important; }
+</style>

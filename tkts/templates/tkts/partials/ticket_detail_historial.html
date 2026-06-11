@@ -1,0 +1,69 @@
+{% if not page.has_previous %}
+<table class='table table-borderless table-sm'>
+	<thead>
+		<th class="col-1">
+		</th>
+		<th class="col-3">
+			Fecha y Hora
+		</th>
+		<th class="col-3">
+			Usuario
+		</th>
+		<th class="col-5">
+			Campos modificados
+		</th>
+	</thead>
+	<tbody>
+{% endif %}
+		{% for cambio in page %}
+			<tr class='row-collapsing'>
+				<td><a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#cambio{{cambio.id}}" role="button" aria-expanded="true" aria-controls="cambio{{cambio.id}}">
+					<i class='bi bi-chevron-down'></i>
+				</a></td>
+				<td>
+					{{ cambio.timestamp|date:'SHORT_DATETIME_FORMAT' }}
+				</td>
+				<td>
+					{{ cambio.user }}
+				</td>
+				<td>
+					{{cambio.changed_data.keys|join:', '}}
+				</td>
+			</tr>
+			<tr class="collapse" id="cambio{{cambio.id}}">
+				<td></td>
+				<td colspan="3">
+					<table class='table table-hover table-borderless table-sm'>
+						<tr>
+							<th scope="col" class="col-3 ">Campo</th>
+							<th scope="col" class="col-9">Valores</th>
+						</tr>
+						{% for campo, valor in cambio.changed_data.items %}
+						<tr>
+							<td>{{campo}}</td>
+							<td>
+								{% if valor.agregado %}
+								<p>Agregado: {{valor.agregado|linebreaksbr}}</p>
+								{% else %}
+								<p>De: {{valor.de|default_if_none:"Ninguno"|linebreaksbr}}</p>
+								<p>A: {{valor.a|default_if_none:"Ninguno"|linebreaksbr}}</p>
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+					</table>
+				</td>
+			</tr>
+		{% endfor %}
+		{% if page.has_next %}
+		<tr
+			class="d-none"
+			hx-get='/tickets/{{ticket_pk}}/historial/?page={{ page.next_page_number }}'
+			hx-trigger="load"
+			hx-swap="outerHTML"
+		></tr>
+		{% endif %}
+{% if not page.has_previous %}
+	</tbody>
+</table>
+{% endif %}

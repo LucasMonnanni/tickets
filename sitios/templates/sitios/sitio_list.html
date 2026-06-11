@@ -1,0 +1,100 @@
+{% extends 'tkts/list_base.html' %}
+
+{% block list_head %}
+    <title>Sitios</title>
+    <script>
+        var model = 'sitio'
+        var defaultVisibleColumns = [1,1,0,0,0, 0,1,1,0,0, 0,0,0,0,0, 0]
+    </script>
+{% endblock list_head %}
+
+{% load page_range %}
+{% block list %}   
+<div class="row">
+    <table class='table table-hover'>
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col" class='text-center' onclick='setOrder("ta")'>ID Sitio</th>
+                <th scope="col" class='removable position-relative'onclick='setOrder("nombre")'>Nombre</th>
+                <th scope="col" class='removable position-relative' onclick='setOrder("direccion")'>Dirección</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("localidad")'>Localidad</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("municipio")'>Municipio</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("provincia")'>Provincia</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("proyecto")'>Proyecto</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("tipo")'>Tipo</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("estructura")'>Estructura</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("altura")'>Altura</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("acceso")'>Acceso</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("candado_calle")'>Candado Calle</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("candado_sitio")'>Candado Sitio</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("conflicto")'>Conflicto</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("procedimiento")'>Procedimiento</th>
+                <th scope="col" class='text-center removable position-relative' onclick='setOrder("estado")'>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sitio in object_list %}
+            <tr id='{{sitio.pk}}' style="transform:rotate(0);" class='sitio'>
+                <th scope="row" class='text-center px-3'>{{sitio.sigla_id}}
+                    <a href="{%url 'sitio_detalle' sitio.pk %}" class="stretched-link"></a>
+                </th>
+                <td>{{sitio.nombre|truncatechars:45}}</td>
+                <td>{{sitio.direccion|truncatechars:45}}</td>
+                <td class='text-center'>{{sitio.localidad|title}}</td>
+                <td class='text-center'>{{sitio.municipio|title}}</td>
+                <td class='text-center'>{{sitio.provincia}}</td>
+                <td class='text-center'>{{sitio.proyecto|title}}</td>
+                <td class='text-center'>{{sitio.tipo}}</td>
+                <td class='text-center'>{{sitio.estructura}}</td>
+                <td class='text-center'>{{sitio.altura}}</td>
+                <td class='text-center'>{{sitio.acceso|title}}</td>
+                <td class='text-center'>{{sitio.candado_calle|title}}</td>
+                <td class='text-center'>{{sitio.candado_sitio|title}}</td>
+                <td class='text-center'>{% if sitio.conflicto %}Sí {%else%} No {%endif%}</td>
+                <td class='text-center'>{{sitio.procedimiento|truncatechars:45}}</td>
+                <td class='text-center'>{{sitio.estado|title}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if is_paginated %}
+<div class="row py-2 justify-content-between">
+    <div class="col-auto">
+    <a href='#' {% if page_obj.has_previous %} 
+        class="btn page_link btn-secondary btn-sm" data-page={{page_obj.previous_page_number}} 
+    {% else %} 
+        class="btn disabled btn-secondary btn-sm" aria-disabled="true"
+    {% endif %}>Anterior</a>
+    </div>
+    <div class="col-auto">
+    <div class="row py-2 justify-content-center">
+    {% get_proper_elided_page_range paginator page_obj.number 2 2 as page_range %}
+    {% for num in page_range %}
+    <div class="col-auto">
+        <a href='#' {% if num == '...' %} 
+        class="btn disabled btn-outline-secondary btn-sm" aria-disabled="true"
+        {% elif num == page_obj.number %} 
+        class="btn disabled btn-outline-danger btn-sm" aria-disabled="true"
+        {% else %} 
+        class="btn page_link btn-outline-secondary btn-sm" data-page={{num}} 
+        {% endif %}>{{num}}</a>
+    </div>
+    {% endfor %}
+    </div>
+    </div>
+    <div class="col-auto">
+    <a href='#' {% if page_obj.has_next %} 
+        class="btn page_link btn-secondary btn-sm" data-page={{page_obj.next_page_number}} 
+    {% else %} 
+        class="btn disabled btn-secondary btn-sm" aria-disabled="true"
+    {% endif %}>Siguiente</a>
+    </div>
+</div>
+<div class="row py-2">
+    <p>Mostrando sitios del {{page_obj.start_index}} al {{page_obj.end_index}} de {{paginator.count}}</p>
+</div>
+{% else %}
+    <p>Total: {{paginator.count}}</p>
+{% endif %}
+{% endblock list %}

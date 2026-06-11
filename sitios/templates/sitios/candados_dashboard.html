@@ -1,0 +1,72 @@
+{% extends 'tkts/base.html' %}
+
+{% block head %}
+<title>Candados</title>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container-lg">
+	<div class="row my-4">
+		<div class="col">
+			<h4>Candados por Sitio</h4>
+		</div>
+		<div class="col-auto">
+			<button
+				class="btn btn-primary btn-sm"
+				id="refresh-btn"
+				hx-get="{% url 'candados_refresh' %}"
+				hx-target="#table-body"
+				hx-swap="innerHTML"
+				hx-on::request="this.disabled = true; document.getElementById('loading-spinner').style.display = 'inline-block';"
+				hx-on::afterRequest="this.disabled = false; document.getElementById('loading-spinner').style.display = 'none'; updateTimestamp();"
+			>
+				<span class="spinner-border spinner-border-sm me-2" id="loading-spinner" style="display: none;"></span>
+				Actualizar
+			</button>
+		</div>
+	</div>
+
+	<div class="row">
+		<p class="text-muted small">
+			{% if updated_at %}
+			Última actualización: <span id="updated-time">{{ updated_at }}</span>
+			{% else %}
+			Sin datos disponibles
+			{% endif %}
+		</p>
+	</div>
+
+	<div class="row">
+		<table class="table table-hover">
+			<thead class="thead-dark">
+				<tr>
+					<th scope="col" class="text-center">TA</th>
+					<th scope="col" class="text-center">Candados Bluetooth</th>
+					<th scope="col" class="text-center">Candados en Sistema</th>
+				</tr>
+			</thead>
+			<tbody id="table-body">
+				{% include 'sitios/candados_table_rows.html' %}
+			</tbody>
+		</table>
+	</div>
+
+	{% if is_loading %}
+	<div class="row">
+		<div class="alert alert-info" role="alert">
+			<small>Los datos del sistema están siendo cargados. Haz clic en "Actualizar" para obtener los últimos datos.</small>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+<script>
+function updateTimestamp() {
+	const now = new Date();
+	const isoString = now.toISOString();
+	document.getElementById('updated-time').textContent = isoString;
+}
+</script>
+{% endblock %}
+

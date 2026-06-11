@@ -1,0 +1,251 @@
+{% extends './base.html' %}
+{% block head %}
+	<title>Ticket N°: {{object.id}}</title>
+{% endblock %}
+{% load static %}
+{% block body %}
+<script src="{% static 'js/htmx.min.js' %}"></script>
+
+{{form.media}}
+<div class="container-sm justify-content-center">
+	<div class="row justify-content-center">
+		<div class="col-xl-10">
+			<form id="ticketForm" method="post" class="needs-validation" novalidate>
+				{% csrf_token %}
+				<!-- Id Estado Nombre Ultima modificacion -->
+				<div class="row my-5">
+					<div class="col-md-2 col-6">
+						<label for="ticket_id" class="form-label">Ticket N°</label>
+						<input type="text" readonly class="form-control-plaintext form-control" id="ticket_id" value="{{object.id}}">
+					</div>
+					<div class="col-md-3 col-6">
+						<label for="{{form.estado.id_for_label}}" class="form-label">{{form.estado.label}}</label>
+						{{form.estado}}
+						<div id="estado_feedback" class="invalid-feedback">{{form.estado.errors}}</div>
+					</div>
+					<div class="col-md-5 col-auto">
+						<label for="ticket_inicio" class="form-label">Ingresado</label>
+						<input type="text" readonly class="form-control-plaintext form-control" id="ticket_inicio" value="{{object.inicio}} por {{object.nombre}}, {{object.email}}, Tel: {{object.telefono}}">
+					</div>
+					<div class="col-md-2 col-auto">
+						<label for="ticket_ultima_modificacion" class="form-label fs-6 fst-italic">Última modificación</label>
+						<input type="text" readonly class="form-control-plaintext form-control" id="ticket_ultima_modificacion" value="{{object.ultima_modificacion|date:'SHORT_DATE_FORMAT'}} {{object.ultima_modificacion|time:'H:i'}}">
+					</div>
+				</div>
+				<!-- Sitio Cliente Motivo Prioridad -->
+				<div class="row my-4">
+                    <div class="col-md-6 col-lg-2">
+                        <label for="{{form.sitio.id_for_label}}" class="form-label">{{form.sitio.label}}</label>
+                        <div class="input-group has-validation">
+                            {{form.sitio}}
+                            <a class="input-group-text text-decoration-none" id="sitio-addon2" href='{% url 'sitio_detalle' form.sitio.value %}'>Ir</a>
+                        </div>
+                        <div id="{{form.sitio.id_for_label}}_feedback" class="invalid-feedback">{{form.sitio.errors}}</div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <label for="{{form.cliente.id_for_label}}" class="form-label">{{form.cliente.label}}</label>
+                        {{form.cliente}}
+                        <div id="cliente_feedback" class="invalid-feedback">{{form.cliente.errors}}</div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <label for="{{form.motivo.id_for_label}}" class="form-label">{{form.motivo.label}}</label>
+                        {{form.motivo}}
+                        <div id="motivo_feedback" class="invalid-feedback">{{form.motivo.errors}}</div>
+                    </div>
+                    <div class="col-md-6 col-lg-3">
+                        <label for="{{form.prioridad.id_for_label}}" class="form-label">{{form.prioridad.label}}</label>
+                        {{form.prioridad}}
+                        <div id="prioridad_feedback" class="invalid-feedback">{{form.prioridad.errors}}</div>
+                    </div>
+                </div> 
+				{% if object.acceso %}
+					{% with object.acceso.permiso_generado as readonly %}
+						{% include 'tkts/partials/ticket_detail_acceso.html' %}
+					{% endwith %}
+				{% elif object.cambio_de_equipos %}
+					{% include 'tkts/partials/ticket_detail_cambio.html' %}
+				{% else %}
+				<!-- Problema -->
+				<div class="row my-4">
+					<div class="col-md-12">
+						<label for={{form.problema.id_for_label}} class="form-label">{{form.problema.label}}</label>
+						{{form.problema}}
+						<div id="problema_feedback" class="invalid-feedback">{{form.problema.errors}}</div>
+					</div>
+				</div>
+				{% endif %}
+				<!-- Solucion -->
+				<div class="row my-4">
+					<div class="col-md-12">
+						<label for={{form.solucion.id_for_label}} class="form-label">{{form.solucion.label}}</label>
+					{% if form.solucion.value %}
+						{{form.solucion}}   
+					</div>
+				</div>
+				<div class="row my-4">
+					<div class="col-md-12">
+					{% endif %}
+						<div class="input-group">
+							<i class="bi bi-plus fs-5 input-group-text text-decoration-none" id="solucion_addon1"></i>
+							{{form.solucion_agregar}}
+						</div>
+						<div id="solucion_feedback" class="invalid-feedback">{{form.solucion_agregar.errors}}</div>
+					</div>
+				</div>
+				{% if form.solucion.errors %}
+				<div class="row my-4">
+					{% for error in form.solucion.errors %}
+					<p class="text-danger">{{error}}</p>
+					{% endfor %}
+				</div>
+				{% endif %}
+				{% if not object.acceso and not object.cambio_de_equipos %}
+				<!-- Facturacion -->
+				{% include 'tkts/partials/ticket_detail_oc.html' %}
+				{% endif %}
+				<!-- Programada Cierre Usuario -->
+				<div class="row my-4">
+					<div class="col-md-4">
+						<label for="{{form.programada.id_for_label}}" class="form-label">{{form.programada.label}}</label>
+						{{form.programada}}
+						<div id="programada_feedback" class="invalid-feedback">{{form.programada.errors}}</div>
+					</div>
+					<div class="col-md-4">
+						<label for="{{form.cierre.id_for_label}}" class="form-label">{{form.cierre.label}}</label>
+						{{form.cierre}}
+						<div id="cierre_feedback" class="invalid-feedback">{{form.cierre.errors}}</div>
+					</div>
+					<div class="col-md-4">
+						<label for="{{form.usuario_asignado.id_for_label}}" class="form-label">{{form.usuario_asignado.label}}</label>
+						{{form.usuario_asignado}}
+						<div id="{{form.usuario_asignado.id_for_label}}_feedback" class="invalid-feedback">{{form.usuario_asignado.errors}}</div>
+					</div>
+				</div>
+				{% if form.programada.errors or form.cierre.errors or form.usuario_asignado.errors %}
+				<div class="row my-4">
+					{% for error in form.programada.errors %}
+					<p class="text-danger">{{error}}</p>
+					{% endfor %}
+					{% for error in form.cierre.errors %}
+					<p class="text-danger">{{error}}</p>
+					{% endfor %}
+					{% for error in form.usuario_asignado.errors %}
+					<p class="text-danger">{{error}}</p>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<!-- Observaciones -->
+				<div class="row my-4">
+					<div class="col-md-12">
+						<label for={{form.observaciones_agregar.id_for_label}} class="form-label">{{form.observaciones.label}}</label>
+					{% if form.observaciones.value %}
+						{{form.observaciones}}   
+					</div>
+				</div>
+				<div class="row my-4">
+					{% endif %}
+					<div class="col-md-12">
+						<div class="input-group">
+							<i class="bi bi-plus fs-5 input-group-text text-decoration-none" id="observaciones_addon1"></i>
+							{{form.observaciones_agregar}}
+						</div>
+						<div id="observaciones_feedback" class="invalid-feedback">{{form.observaciones_agregar.errors}}</div>
+					</div>
+				</div>
+				{% if form.obervaciones.errors %}
+				<div class="row my-4">
+					{% for error in form.obervaciones.errors %}
+					<p class="text-danger">{{error}}</p>
+					{% endfor %}
+				</div>
+				{% endif %}
+				<!-- Actualizar -->
+				<div class="row my-4 justify-content-between">
+					<div class="col-6">
+						<button id='updateButton' class="mb-5 btn btn-secondary" type="submit" disabled>Actualizar Ticket</button>
+						{% if object.acceso and not object.acceso.permiso_generado %}
+						<span class="d-inline-block" data-bs-toggle="tooltip">
+							<button 
+								id='generarPermisosBtn'
+								class="mb-5 btn btn-secondary"
+								hx-get="/tickets/{{object.pk}}/generar-permisos/"
+								hx-target="#acceso-partial"
+								hx-swap="outerHTML"
+								hx-confirm="¿Está seguro que desea generar permisos?"
+								hx-indicator="#indicator"
+							>Generar Permisos</button>
+						</span>
+						{% endif %}
+					</div>
+					<div class="col-1 ">
+						<a href='/ticket/{{object.get_public_query}}' class='link-body-emphasis'><i class='bi bi-book' title='Ver versión pública' style="font-size: 1.5rem;"></i></a>
+					</div>
+				</div>
+			</form>
+			{% if object.cambios.first %}
+			<div class='row my-4 row-collapsing'>
+				<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#historial" role="button" aria-expanded="true" aria-controls="historial">
+					<i class='bi bi-chevron-down'></i>
+					Historial de cambios 
+				</a>
+				<hr class="my-1">
+			</div>
+			<div
+				class="row my-4 collapse justify-content-lg-center"
+				id="historial"
+				hx-get='/tickets/{{object.pk}}/historial/?page=1'
+				hx-trigger="load"
+
+			>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		let elems = document.querySelectorAll('.form-control-plaintext', )
+		elems.forEach((elem)=> {
+			elem.style.height = '';
+			elem.style.height = (elem.scrollHeight + 2) + "px";
+		})
+		document.body.onkeydown = (e) => {
+			if (e.key == 's' && e.ctrlKey) {
+				e.preventDefault();
+				document.querySelector('#updateButton').click();
+			}
+		}
+		let form = document.querySelector('#ticketForm')
+		let programada = form.querySelector('#{{form.programada.id_for_label}}')
+		let cierre = form.querySelector('#{{form.cierre.id_for_label}}')
+		let submitButton = form.querySelector('#updateButton')
+		let enableSubmit = () => {
+			submitButton.disabled = false;
+			permisosButton = document.getElementById('generarPermisosBtn')
+			if (permisosButton) {
+				permisosButton.disabled = true;
+				permisosButton.parentElement.title = "Guarde los cambios antes de generar los permisos"
+			} 
+		}
+		let enableTabChar = (e) => {
+			if (e.key == "Tab") {
+				e.preventDefault();
+				const textArea = e.currentTarget;
+				textArea.setRangeText(
+					"\t",
+					textArea.selectionStart,
+					textArea.selectionEnd,
+					"end"
+				);
+			}
+		}
+		form.addEventListener("change", enableSubmit)
+		form.querySelectorAll("textarea").forEach((t)=> {t.addEventListener("keydown", enableTabChar)})
+		window.addEventListener("pointerdown", (e)=> {  
+			if (e.target.classList.contains('day')) {
+				enableSubmit()
+			}
+		})
+	});
+	</script>
+{% endblock %}

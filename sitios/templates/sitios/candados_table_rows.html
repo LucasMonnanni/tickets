@@ -1,0 +1,17 @@
+{% for row in table_data %}
+<tr>
+	<th scope="row" class="text-center px-3">
+		{{ row.sitio.sigla_id }}
+		<a href="{% url 'sitio_detalle' row.sitio.pk %}" class="stretched-link"></a>
+	</th>
+	<td class="text-center">{{ row.bluetooth_count }}</td>
+	<td class="text-center">
+		{% if row.api_locks is not None %}
+			{{ row.api_locks }}
+		{% else %}
+			<span class="text-muted">—</span>
+		{% endif %}
+	</td>
+</tr>
+{% endfor %}
+

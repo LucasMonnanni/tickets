@@ -1,0 +1,8 @@
+<select name="{{ widget.name }}" id="{{ widget.attrs.id }}" class='form-control' autocomplete='off'>
+	{% for group_name, group_choices, group_index in widget.optgroups %}{% if group_name %}
+	<optgroup label="{{ group_name }}">{% endif %}
+		{% for option in group_choices %}
+			<option value="{{ option.value }}" title="{{option.label}}"{% if option.selected %} selected {% endif %}>{% if option.value == '' %}-----{% else %}{{ option.value }}{% endif %}</option>
+		{% endfor %}{% if group_name %}
+	</optgroup>{% endif %}{% endfor %}
+</select>

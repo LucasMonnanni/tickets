@@ -1,0 +1,47 @@
+<div class="row my-4">
+	<div class="col-md-6">
+		<label class="form-label">Antenas RF actuales</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.antenas_actual }}</textarea>
+	</div>
+	<div class="col-md-6">
+		<label class="form-label">Antenas RF</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.antenas }}</textarea>
+	</div>
+</div>
+<div class="row my-4">
+	<div class="col-md-6">
+		<label class="form-label">Radioenlaces actuales</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.enlaces_actual }}</textarea>
+	</div>
+	<div class="col-md-6">
+		<label class="form-label">Radioenlaces</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.enlaces }}</textarea>
+	</div>
+</div>
+<div class="row my-4">
+	<div class="col-md-6">
+		<label class="form-label">RRU actual</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.rru_actual }}</textarea>
+	</div>
+	<div class="col-md-6">
+		<label class="form-label">RRU</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.rru }}</textarea>
+	</div>
+</div>
+<div class="row my-4">
+	<div class="col-md-6">
+		<label class="form-label">Cota 0</label>
+		<textarea class="form-control" rows="2" readonly>{{ object.cambio_de_equipos.piso }}</textarea>
+	</div>
+	<div class="col-md-6">
+		<label class="form-label">Potencia (kW)</label>
+		<input type="text" class="form-control" value="{{ object.cambio_de_equipos.energia }}" readonly>
+	</div>
+</div>
+<div class="row my-4">
+	<div class="col-md-12">
+		<label for={{form.problema.id_for_label}} class="form-label">Detalle</label>
+		{{form.problema}}
+		<div id="problema_feedback" class="invalid-feedback">{{form.problema.errors}}</div>
+	</div>
+</div>

@@ -1,0 +1,241 @@
+{% extends './base.html' %}
+{% block head %}
+<title>Tickets</title>
+<script>
+    function lockEnterToForm(form) {
+        document.body.onkeydown = (evt) => {
+            if (evt.key == 'Enter') {
+                evt.preventDefault()
+                form.querySelector('button').click()
+            }
+        }
+    }
+    function releaseEnter() {
+        document.body.onkeydown = (evt) => {}
+    }
+    function onFocus(elem) {
+        lockEnterToForm(elem.parentNode.parentNode)
+    }
+    function onBlur(elem) {
+        releaseEnter(elem.parentNode.parentNode)
+    }
+</script>
+{% endblock %}
+{% block body %}
+{% load static %}
+<div class="container">
+    <div class="col-md-auto">
+        {% if not user.is_authenticated %}
+        <div class="row my-3 px-5">
+            <p>Bienvenido al sistema de gestión de tickets. Aquí usted podrá generar su reclamo o
+                pedido de acceso o intervención.</p>
+        </div>
+        {% else %}
+        <div class="row my-3 px-5">
+            <h4>Hola {{ user.first_name|title }}!</h4>
+        </div>
+        {% endif %}
+        <div class="row form-floating m-3">
+            <div class="col-xl-3 col-md-6 pt-3">
+                <button type="button" class="btn btn-secondary" style="width:100%"
+                    onclick="window.location = '{% url 'ticket_nuevo' %}'">Ingresar nuevo ticket</button>
+            </div>
+            <div class="col-xl-3 col-md-6 pt-3">
+                <button type="button" class="btn btn-secondary" style="width:100%"
+                    onclick="window.location = '{% url 'politica' %}'">Consultar Política de Acceso</button>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="row form-floating m-3 justify-content-start">
+            <!-- Tickets card -->
+            <div class="col-xxl-4 col-lg-6 col-md-9 col-sm-12 m-0 p-3">
+                <div class="card">
+                    <div class="card-header row-collapsing">
+                        <a class="fs-5 text-reset text-decoration-none" data-bs-toggle="collapse" href="#ticket-card-body" role="button" aria-expanded="true" aria-controls="ticket-card-body">
+                            <i class='bi bi-chevron-down'></i>
+                            <span class="fs-5 fw-semibold card-title">Tickets</span>
+                        </a>
+                    </div>
+                    <div class="collapse show" id="ticket-card-body">
+                        <div class="card-body">
+                            <!-- ID -->
+                            <form class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Tkt N°</span>
+                                    <input type="number" id="ticket_id" class="form-control" aria-label="ID"
+                                        aria-describedby="basic-addon1" onfocus="onFocus(this)" onblur="onBlur(this)">
+                                    <button type="button" class="btn btn-secondary" id="boton" onclick="
+                                    var id = document.getElementById('ticket_id').value
+                                    if (id > 0)    {
+                                        window.location = '{% url 'detalle' 99999 %}'.replace('99999/', id);
+                                    } else {
+                                        window.alert('N° de ticket inválido')
+                                    }
+                                    ">Ir</button>
+                                </div>
+                            </form>
+                            <!-- Estado -->
+                            <form action="{% url 'ticket_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Estado</span>
+                                    <select id="ticket_estado" name="estado" class="form-control" aria-label="Estado">
+                                        {% for i, estado in tkts_estados %}
+                                        {% autoescape off %}
+                                        <option value={{estado.nombre|urlencode:""}}>{{estado.nombre}}</option>
+                                        {% endautoescape %}
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-secondary" value="Ir">
+                                </div>
+                            </form>
+                            <!-- Nombre -->
+                            <form action="{% url 'ticket_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Nombre</span>
+                                    <input type="text" id="ticket_nombre" name="nombre__icontains" class="form-control" aria-label="Nombre">
+                                    <button type="submit" class="btn btn-secondary">Ir</button>
+                                </div>
+                            </form>
+                            <!-- Frase en cuerpo -->
+                            <form action="{% url 'ticket_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Cuerpo</span>
+                                    <input type="text" id="ticket_nombre" name="problema__icontains" class="form-control" aria-label="Nombre">
+                                    <button type="submit" class="btn btn-secondary">Ir</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesos card -->
+            <div class="col-xxl-4 col-lg-6 col-md-9 col-sm-12 m-0 p-3">
+                <div class="card">
+                    <div class="card-header row-collapsing">
+                        <a class="fs-5 text-reset text-decoration-none" data-bs-toggle="collapse" href="#acceso-card-body" role="button" aria-expanded="true" aria-controls="acceso-card-body">
+                            <i class='bi bi-chevron-down'></i>
+                            <span class="fs-5 fw-semibold card-title">Accesos</span>
+                        </a>
+                    </div>
+                    <div class="collapse show" id="acceso-card-body">
+                        <div class="card-body">
+                            <!-- ID -->
+                            <form class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Tkt N°</span>
+                                    <input type="number" id="acceso_id" class="form-control" aria-label="ID"
+                                        aria-describedby="basic-addon1" onfocus="onFocus(this)" onblur="onBlur(this)">
+                                    <button type="button" class="btn btn-secondary" id="boton" onclick="
+                                    var id = document.getElementById('acceso_id').value
+                                    if (id > 0)    {
+                                        window.location = '{% url 'detalle' 99999 %}'.replace('99999/', id);
+                                    } else {
+                                        window.alert('N° de ticket inválido')
+                                    }
+                                    ">Ir</button>
+                                </div>
+                            </form>
+                            <!-- Estado -->
+                            <form action="{% url 'acceso_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Estado</span>
+                                    <select id="acceso_estado" name="estado" class="form-control" aria-label="Estado">
+                                        {% for i, estado in accesos_estados %}
+                                        {% autoescape off %}
+                                        <option value={{estado.nombre|urlencode:""}}>{{estado.nombre}}</option>
+                                        {% endautoescape %}
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-secondary" value="Ir">
+                                </div>
+                            </form>
+                            <!-- Nombre -->
+                            <form action="{% url 'acceso_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Nombre</span>
+                                    <input type="text" id="acceso_nombre" name="nombre__icontains" class="form-control" aria-label="Nombre">
+                                    <button type="submit" class="btn btn-secondary">Ir</button>
+                                </div>
+                            </form>
+                            <!-- Frase en cuerpo -->
+                            <form action="{% url 'acceso_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Personal</span>
+                                    <input type="text" id="acceso_nombre" name="acceso__personal__apellido__icontains" class="form-control" aria-label="Nombre">
+                                    <button type="submit" class="btn btn-secondary">Ir</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sitios card -->
+            <div class="col-xxl-4 col-lg-6 col-md-9 col-sm-12 m-0 p-3">
+                <div class="card">
+                    <div class="card-header row-collapsing">
+                        <a class="fs-5 text-reset text-decoration-none" data-bs-toggle="collapse" href="#sitio-card-body" role="button" aria-expanded="true" aria-controls="sitio-card-body">
+                            <i class='bi bi-chevron-down'></i>
+                            <span class="fs-5 fw-semibold card-title">Sitios</span>
+                        </a>
+                    </div>
+                    <div class="collapse show" id="sitio-card-body">
+                        <div class="card-body">
+                            <!-- ID -->
+                            <form class="text-center">
+                                <div class="input-group mb-3">
+                                    <input type="text" id="sitio_id" class="form-control" list='datalistOptions'
+                                        aria-label="ID" aria-describedby="basic-addon1" onfocus="onFocus(this)" onblur="onBlur(this)">
+                                        <button type="button" class="btn btn-secondary" id="boton" onclick="
+                                                var id = document.getElementById('sitio_id').value
+                                                if (id > 0)    {
+                                                    window.location = '{% url 'sitio_detalle' %}?sigla=9999'.replace('9999/', id)
+                                                } else {
+                                                    window.alert('N° de sitio inválido')
+                                                }
+                                            ">Ir</button>
+                                </div>
+                            </form>
+                            <!-- Estado -->
+                            <form action="{% url 'sitio_lista' %}" method="GET" class="text-center">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Estado</span>
+                                    <select id="sitio_estado" name="estado" class="form-control" aria-label="Estado">
+                                        {% for estado in sitios_estados %}
+                                        <option value={{estado|urlencode:"" }}>{{estado|title}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input type="submit" class="btn btn-secondary" value="Ir">
+                                </div>
+                            </form>
+                            <!-- ID Operador -->
+                            <form action="{% url 'buscar' %}" method="POST" class="text-center">
+                                {% csrf_token %}
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1">Buscar por ID del operador</span>
+                                    <input type="text" id="sitio_id_operador_id" name="id" class="form-control" aria-label="ID de operador o direccion">
+                                    <button type="submit" class="btn btn-secondary">Ir</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% if debug %}
+<div class="fixed-bottom p-3">
+    <div class="badge bg-dark">
+      <span class="d-block d-sm-none">XS</span>
+      <span class="d-none d-sm-block d-md-none">SM</span>
+      <span class="d-none d-md-block d-lg-none">MD</span>
+      <span class="d-none d-lg-block d-xl-none">LG</span>
+      <span class="d-none d-xl-block d-xxl-none">XL</span>
+      <span class="d-none d-xxl-block">XXL</span>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

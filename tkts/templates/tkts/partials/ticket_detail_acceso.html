@@ -1,0 +1,201 @@
+<div id="acceso-partial">
+{% if readonly %}
+<!-- Franja -->
+<div class="row my-4">
+	<div class="col-lg-3">
+		<label for="fechas-p" class="form-label">Fechas</label>
+		<p id="fechas-p">De <b>{{acceso.fecha_desde|date:"SHORT_DATE_FORMAT"}}</b> a <b>{{acceso.fecha_hasta|date:"SHORT_DATE_FORMAT"}}</b></p>
+	</div>
+	<div class="col-lg-2">
+		<label for="horas-p" class="form-label">Franja horaria</label>
+		<p id="horas-p">De <b>{{acceso.hora_desde|date:"TIME_FORMAT"}}</b> a <b>{{acceso.hora_hasta|date:"TIME_FORMAT"}}</b></p>
+	</div>
+	<div class="col-lg-6">
+		<label for="empresa-p" class="mb-2">Empresa</label>
+		<p id="empresa-p">{{ acceso.empresa }}</p>
+	</div>
+</div>
+<!-- Personal -->
+<div class="row my-4">
+	<div class="col-md">
+		<label class="form-label">Personal</label>
+		<div class="table-responsive">
+			<table class="table table-sm table-borderless">
+				<thead>
+					<tr>
+						<th>Nombre Completo</th>
+						<th>Teléfono</th>
+						<th>Company ID</th>
+						<th>User Name</th>
+						<th>Password</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for persona in acceso.personal.all %}
+					<tr>
+					{% if persona.aprobado %}
+						<td>{{ persona.nombre_completo }}</td>
+						<td>{{ persona.telefono }}</td>
+						<td>3105</td>
+						<td>{{ persona.dni }}</td>
+						<td>{{ persona.password }}</td>
+						{% else %}
+						<td class="text-muted">{{ persona.nombre_completo }}</td>
+						{% endif %}
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% else %}
+<!-- Franja -->
+<div class="row my-4">
+	<div class="col-lg-5">
+		<label for="{{ acceso_form.fecha_desde.id_for_label }}" class="form-label">Fechas</label>
+		<div class="input-group">
+			<span class="input-group-text">De</span>
+			{{ acceso_form.fecha_desde }}
+			<span class="input-group-text">a</span>
+			{{ acceso_form.fecha_hasta }}
+		</div>
+	</div>
+	<div class="col-lg-4">
+		<label class="form-label">Franja horaria</label>
+		<div class="input-group">
+			<span class="input-group-text">De</span>
+			{{ acceso_form.hora_desde }}
+			<span class="input-group-text">a</span>
+			{{ acceso_form.hora_hasta }}
+		</div>
+		<div id="franja_feedback"></div>
+	</div>
+	<div class="col-lg-3">
+		<label for="{{ acceso_form.empresa.id_for_label }}" class="mb-2">{{ acceso_form.empresa.label }}</label>
+		{{ acceso_form.empresa }}
+	</div>
+</div>
+{% if acceso.fecha_desde.errors or acceso.fecha_hasta.errors or acceso.fecha_desde.errors or acceso.fecha_hasta.errors%}
+<div class="row my-4">
+	{% for error in acceso.fecha_desde.errors %}
+	<p class="text-danger">{{error}}</p>
+	{% endfor %}
+	{% for error in acceso.fecha_hasta.errors %}
+	<p class="text-danger">{{error}}</p>
+	{% endfor %}
+	{% for error in acceso.fecha_desde.errors %}
+	<p class="text-danger">{{error}}</p>
+	{% endfor %}
+	{% for error in acceso.fecha_hasta.errors %}
+	<p class="text-danger">{{error}}</p>
+	{% endfor %}
+</div>
+{% endif %}
+<!-- Personal -->
+<div class="row my-4">
+	<div class="col-md">
+		<label class="form-label">Personal</label>
+		<div class="table-responsive">
+			<table class="table table-sm table-borderless">
+				<thead>
+					<tr>
+						<th>Nombre</th>
+						<th>Apellido</th>
+						<th>DNI</th>
+						<th>Teléfono</th>
+						<th class="text-center">Aprobado?</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for personal in personal_formset %}
+					<div class="d-none">{{personal.id}}</div>
+					<tr>
+						<td>{{ personal.nombre }}</td>
+						<td>{{ personal.apellido }}</td>
+						<td>{{ personal.dni }}</td>
+						<td>{{ personal.telefono }}</td>
+						<td class="text-center">{{ personal.aprobado }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			{{ personal_formset.management_form }}
+		</div>
+	</div>
+</div>
+<div class="row my-2 htmx-indicator" id="indicator">
+	<p>Generando permisos en Bluetooth</p>
+</div>
+{% if error %}
+<div class="row my-2 flashy">
+	<h5>No se pudieron generar los permisos en Bluetooth:</h5>
+	<p>{{error}}</p>
+</div>
+{% endif %}
+{% endif %}
+<!-- Tareas -->
+<div class="row my-4">
+	<div class="col-md-9">
+		<label for={{form.problema.id_for_label}} class="form-label">Tareas a realizar</label>
+		{{form.problema}}
+		<div id="problema_feedback" class="invalid-feedback">{{form.problema.errors}}</div>
+	</div>
+	<div class="col-md-3">
+		<label for={{acceso_form.afectacion.id_for_label}} class="form-label">Condiciones</label>
+		<p>
+			{% if acceso_form.afectacion.value %} <span>Hay afectación de servicio.</span><br> {% endif %}
+			{% if acceso_form.riesgo_electrico.value %} <span>Hay riesgo eléctrico.</span><br> {% endif %}
+			{% if acceso_form.altura.value %} <span>Incluye trabajo en altura.</span><br> {% endif %}
+		</p>
+	</div>
+	<div class="d-none">{{acceso_form.afectacion}}{{acceso_form.riesgo_electrico}}{{acceso_form.altura}}</div>
+</div>
+</div>
+<style>
+.htmx-indicator{
+    display:none;
+}
+.htmx-request.htmx-indicator {
+	display:flex;
+	animation: pulse 2s cubic-bezier(0.65, 0, 0.35, 1) 0s infinite normal forwards;
+}
+.flashy {
+	animation: flash 2s cubic-bezier(0.65, 0, 0.35, 1) 0s 1 normal forwards;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+@keyframes flash {
+	0% {
+		color: maroon;
+		opacity: 0;
+	}
+
+	20% {
+		color: red;
+		opacity: 1;
+	}
+
+	40% {
+		color: white;
+	}
+
+	60% {
+		color: black;
+	}
+
+	80% {
+		color: red;
+	}
+}
+</style>

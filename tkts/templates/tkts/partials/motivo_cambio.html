@@ -1,0 +1,67 @@
+<div class="row my-4">
+    <div class="col-md-6">
+        <h5>Configuración Actual</h5>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.antenas_actual.id_for_label}}" class="form-label">{{cambio_form.antenas.label}}</label>
+            {{cambio_form.antenas_actual}}
+            <div id="antenas_actual_feedback">{{cambio_form.antenas_actual.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.enlaces_actual.id_for_label}}" class="form-label">{{cambio_form.enlaces.label}}</label>
+            {{cambio_form.enlaces_actual}}
+            <div id="enlaces_actual_feedback">{{cambio_form.enlaces_actual.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.rru_actual.id_for_label}}" class="form-label">{{cambio_form.rru.label}}</label>
+            {{cambio_form.rru_actual}}
+            <div id="rru_actual_feedback">{{cambio_form.rru_actual.errors}}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h5>Configuración Futura</h5>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.antenas.id_for_label}}" class="form-label">{{cambio_form.antenas.label}}</label>
+            {{cambio_form.antenas}}
+            <div id="antenas_feedback">{{cambio_form.antenas.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.enlaces.id_for_label}}" class="form-label">{{cambio_form.enlaces.label}}</label>
+            {{cambio_form.enlaces}}
+            <div id="enlaces_feedback">{{cambio_form.enlaces.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.rru.id_for_label}}" class="form-label">{{cambio_form.rru.label}}</label>
+            {{cambio_form.rru}}
+            <div id="rru_feedback">{{cambio_form.rru.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.piso.id_for_label}}" class="form-label">{{cambio_form.piso.label}}</label>
+            {{cambio_form.piso}}
+            <div id="piso_feedback">{{cambio_form.piso.errors}}</div>
+        </div>
+        <div class="row my-3 mx-0">
+            <label for="{{cambio_form.energia.id_for_label}}" class="form-label">{{cambio_form.energia.label}}</label>
+            {{cambio_form.energia}}
+            <div id="energia_feedback">{{cambio_form.energia.errors}}</div>
+        </div>
+    </div>
+</div>
+<div class="row my-4" >
+	<div class="col-md-8">
+		<label id="problema" for="{{form.problema.id_for_label}}" class="form-label">{{form.problema.label}}</label>
+		{{form.problema}}
+		<div id="problema_feedback">{{form.problema.errors}}</div>
+	</div>
+	<div class="col-md-4">
+		<label for="{{form.link.id_for_label}}" class="form-label">{{form.link.label}}</label>
+        <input
+            type={{form.link.widget_type}}
+            name="{{form.link.html_name}}"
+            id="{{form.link.id_for_label}}"
+            class="form-control {{form.link.css_classes}}"
+            required max_length="200">
+        </input>
+		<div id="link_feedback">{{form.link.errors}}</div>
+		<p>{{form.link.help_text}}</p>
+	</div>
+</div>

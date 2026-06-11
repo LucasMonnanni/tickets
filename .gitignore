@@ -1,0 +1,7 @@
+__pycache__
+staticfiles
+venv
+.env
+.vscode/
+*.bat
+*.sql

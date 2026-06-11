@@ -1,0 +1,15 @@
+{% extends 'tkts/list_base.html' %}
+{% block list_head %}
+  <title>Tickets</title>
+  {{map.header.render|safe}}
+{% endblock list_head %}
+{% block map %}
+  {{map.html.render|safe}}
+<script>
+  let map;
+  L.Map.addInitHook(function () {
+    map = this; 
+  });
+  {{map.script.render|safe}}
+</script>   
+{% endblock map %}

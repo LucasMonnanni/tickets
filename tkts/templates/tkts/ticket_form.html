@@ -1,0 +1,152 @@
+{% extends './base.html' %}
+{% load static %}
+{% block head %}
+	<script src="{% static 'js/acceso.js' %}"></script>
+	<title>Nuevo Ticket</title>
+{% endblock %}
+{% block body %}
+<div class="container-sm justify-content-center">
+	<div class="row">
+		<div class="col-1"> </div>
+		<form method="post" class="col-xl-10" id="ticket-form" novalidate>
+			{{ form.media }}
+			<script src="{% static 'js/htmx.min.js' %}"></script>
+			{% csrf_token %}
+			<div class="row my-4">
+				<div class="col-md-4">
+					<label for="{{form.nombre.id_for_label}}" class="form-label">{{form.nombre.label}}</label>
+					<input type={{form.nombre.widget_type}} name="{{form.nombre.html_name}}" id="{{form.nombre.id_for_label}}" class="form-control {{form.nombre.css_classes}}"
+					required max_length="64"></input>
+					<div id="nombre_feedback" class="invalid-feedback">{{form.nombre.errors}}</div>
+				</div>
+				<div class="col-md-4">
+					<label for="{{form.email.id_for_label}}" class="form-label">{{form.email.label}}</label>
+					<input type={{form.email.widget_type}} name="{{form.email.html_name}}" id="{{form.email.id_for_label}}" class="form-control {{form.email.css_classes}}"
+					required max_length="256"></input>
+					<div id="email_feedback" class="invalid-feedback">{{form.email.errors}}</div>
+				</div>
+				<div class="col-md-4">
+					<label for="{{form.telefono.id_for_label}}" class="form-label">{{form.telefono.label}}</label>
+					<input type={{form.telefono.widget_type}} name="{{form.telefono.html_name}}" id="{{form.telefono.id_for_label}}" class="form-control {{form.telefono.css_classes}}"
+					required min="1100000000" max="9999999999"></input>
+					<div id="telefono_feedback" class="invalid-feedback">{{form.telefono.errors}}</div>
+				</div>
+			</div>
+			<div class="row my-4">
+				<div class="col-md-4">
+					<label for="{{form.sitio.id_for_label}}" class="form-label">{{form.sitio.label}}</label>
+					{{form.sitio}}
+					<div id="sitio_feedback" class="invalid-feedback">{{form.sitio.errors}}</div>
+					<a href="{% url 'buscar' %}">Buscar ID de sitio</a> 
+				</div>
+				<div class="col-md-4">
+					<label for="{{form.cliente.id_for_label}}" class="form-label">{{form.cliente.label}}</label>
+					{{form.cliente}}
+					<div id="cliente_feedback" class="invalid-feedback">{{form.cliente.errors}}</div>
+				</div>
+				<div class="col-md-4">
+					<label for="{{form.motivo.id_for_label}}" class="form-label">{{form.motivo.label}}</label>
+					{{form.motivo}}
+					<div id="motivo_feedback" class="invalid-feedback">{{form.motivo.errors}}</div>
+				</div>
+			</div>
+			<div id="motivo-subform">
+				{% if form.motivo.value == 'ACCESO' %}
+					{% include 'tkts/partials/motivo_acceso.html' %}
+				{% elif form.motivo.value == 'CAMBIO DE EQUIPOS' %}
+					{% include 'tkts/partials/motivo_cambio.html' %}
+				{% else %}
+					{% include 'tkts/partials/motivo_default.html' %}
+				{% endif %}
+			</div>
+			<div class="row my-4">
+				<div class="col-md-6">
+					{{form.captcha}}
+					{{form.captcha.errors}}
+				</div>
+			</div>
+			<button class="mb-5 btn btn-secondary" type="submit" id="submit-button">Generar</button>
+		</form>
+		<div class="col-1"></div>
+	</div>
+</div>
+<script>
+	(() => {
+		var form = document.querySelector('#ticket-form')
+		form.addEventListener('submit', function (event) {
+			if (!form.checkValidity()){
+				event.preventDefault()
+				event.stopImmediatePropagation()
+				form.classList.add('was-validated')
+				form.querySelector('#submit-button').disabled = true;
+				document.querySelectorAll('.form-control').forEach(function (input) {
+					input.addEventListener('change', function() {
+						if(form.checkValidity()) {
+							form.querySelector('#submit-button').disabled = false;
+						};
+					})
+				})
+			} else {
+				form.requestSubmit();
+			}
+		})
+	})()
+
+	{% if user.is_authenticated %}
+	document.getElementById("{{form.nombre.id_for_label}}").value = "{{user.first_name}}";
+	document.getElementById("{{form.email.id_for_label}}").value = "{{user.email}}";
+	document.getElementById("{{form.telefono.id_for_label}}").value = 1100000000;
+	{% endif %}
+
+	if (!Array.prototype.includes) {
+	Object.defineProperty(Array.prototype, 'includes', {
+		value: function(searchElement, fromIndex) {
+
+		if (this == null) {
+			throw new TypeError('"this" es null o no está definido');
+		}
+
+		// 1. Dejar que O sea ? ToObject(this value).
+		var o = Object(this);
+
+		// 2. Dejar que len sea ? ToLength(? Get(O, "length")).
+		var len = o.length >>> 0;
+
+		// 3. Si len es 0, devuelve false.
+		if (len === 0) {
+			return false;
+		}
+
+		// 4. Dejar que n sea ? ToInteger(fromIndex).
+		//	(Si fromIndex no está definido, este paso produce el valor 0.)
+		var n = fromIndex | 0;
+
+		// 5. Si n ≥ 0, entonces
+		//  a. Dejar que k sea n.
+		// 6. Else n < 0,
+		//  a. Dejar que k sea len + n.
+		//  b. Si k < 0, Dejar que k sea 0.
+		var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+		function sameValueZero(x, y) {
+			return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+		}
+
+		// 7. Repite, mientras k < len
+		while (k < len) {
+			// a. Dejar que elementK sea el resultado de ? Get(O, ! ToString(k)).
+			// b. Si SameValueZero(searchElement, elementK) es true, devuelve true.
+			if (sameValueZero(o[k], searchElement)) {
+			return true;
+			}
+			// c. Incrementa k por 1.
+			k++;
+		}
+
+		// 8. Devuelve false
+		return false;
+		}
+	});
+	}
+</script>
+{% endblock %}

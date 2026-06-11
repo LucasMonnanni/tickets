@@ -1,0 +1,74 @@
+{% extends './base.html' %}
+{% block head %}
+<title>Política de Acceso</title>
+{% endblock %}
+{% block body %}
+{% load static %}
+    <div class="container py-4">
+        <div class="col-md-auto">
+            <h4>Política de Acceso</h4>
+        </div>
+        <p>
+        <div class="col-md-auto">
+            <h5>Alcance</h5>
+        </div>
+        <div class="col-md-auto">
+            <p>
+                Ingresos por parte de personal de operadores, sus contratistas y subcontratistas. El procedimiento deberá cumplirse para cada ingreso.
+            </p>
+        </div>
+        <div class="col-md-auto">
+            <h5>Procedimiento</h5>
+        </div>
+        <div class="col-md-auto">
+            <p>El requisito para autorizar el ingreso es la carga de un ticket <a href="{% url 'ticket_nuevo' %}">aquí</a> por parte de personal del operador, para que podamos llevar el control y seguimiento, informar adecuadamente al propietario y asignar los permisos necesarios en el sistema de candados electrónicos.</p>
+            <p>En el mismo se requiere completar:</p>
+            <ul>
+                <li>Datos de quien carga el ticket:
+                    <ul>
+                        <li>Nombre completo</li>
+                        <li>Correo electrónico (con dominio del operador)</li>
+                        <li>Teléfono</li>
+                    </ul>
+                </li>
+                <li>ID del sitio al que deben ingresar. De no conocer el ID del sitio pueden consultarlo <a href="{% url 'buscar' %}">aquí</a> con el ID del operador o la dirección.</li>
+                <li>Cliente u operador</li>
+                <li>Motivo “Acceso”</li>
+                <li>Franja de fechas y horarios del ingreso</li>
+                <li>Detalle del personal que debe ingresar incluyendo de cada uno:
+                    <ul>
+                        <li>Nombre completo</li>
+                        <li>DNI</li>
+                        <li>Teléfono (necesario para que puedan utilizar la app que acciona los candados electrónicos)</li>
+                    </ul>
+                </li>
+                <li>Detalle de las tareas a realizar</li>
+                <li>Link público a una carpeta virtual (GoogleDrive, Dropbox, OneDrive, etc.) que contenga la siguiente documentación:
+                    <ul>    
+                        <li>Para empleados:
+                            <ul>
+                                <li>ART con CNR</li>
+                                <li>SVO</li>
+                                <li>F931 y comprobante de pago</li>
+                            </ul>
+                        </li>
+                        <li>Para autónomos:
+                            <ul>
+                                <li>Seguro de accidentes personales con CNR</li>
+                                <li>Pago de monotributo</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Una vez generado el ticket recibirá un correo a la dirección indicada con el número de referencia y un enlace para el seguimiento del mismo. Una vez revisada la documentación se actualizará el ticket y será notificado al mismo correo, ya sea por la aprobación o solicitando alguna rectificación.</p>
+            <p>El plazo de respuesta será de 48hs hábiles.</p>
+        </div>
+        <div class="col-md-auto">
+            <h5>Llaves</h5>
+        </div>
+        <div class="col-md-auto">
+            <p>Los sitios pueden tener candados comunes o bien electrónicos. Para los comunes, como procedimiento regular se entrega un juego de llaves al supervisor del Operador que realiza la recepción de la obra, por lo cual los contratistas y subcontratistas del Operador deben realizar el procedimiento estándar del Operador para obtener la llave. Los candados electrónicos se accionan a través de la app WiKey para Android o iOS. Para ello se requiere un usuario que se creará al solicitar el primer ingreso de cada persona. En esta instancia se adjuntarán las credenciales e instructivos correspondientes en el propio ticket</p>
+        </div>
+    </div>
+{% endblock %}

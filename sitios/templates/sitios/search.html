@@ -1,0 +1,67 @@
+{% extends 'tkts/base.html' %}
+{% block head %}
+<title>Buscar Sitio</title>
+{% endblock %}
+{% block body %}
+{% load static %}
+	<div class='container-lg'>
+		<div class='col-2'></div>
+		<div class='col-8'>
+			<form method="POST">
+				{% csrf_token %}
+				<div class="row m-3 align-items-center">
+					<div class="form-group col-4">
+						<label for="id">ID Operador</label>
+					</div>
+					<div class="form-group col-4">
+						<label for="direccion">Dirección</label>
+					</div>
+					<div class="form-group col-4">
+					</div>
+				</div>
+				<div class="row m-3 align-items-center">
+					<div class="form-group col-4">
+						{{ form.id }}
+					</div>
+					<div class="form-group col-4">
+						{{ form.direccion }}
+					</div>
+					<div class="form-group col-4">
+						<button class="btn btn-secondary align-bottom" type="submit">Buscar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class='col-2'></div>
+	</div>
+	{% if celdas %}
+	<div class='container-xl'>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">ID Operador</th>
+					<th scope="col">Dirección</th>
+					<th scope="col">Localidad</th>
+					<th scope="col">Provincia</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for celda in celdas %}
+				{% if user.is_authenticated %}
+				<tr onclick='window.location = "{%url 'sitio_detalle' celda.sitio.pk %}"'>
+				{% else %}
+				<tr onclick='window.location = "{%url 'ticket_nuevo'%}?={{celda.sitio.pk}}"'>
+				{% endif %}
+					<th scope="row">{{celda.sitio.ta}}</th>
+					<td>{{celda.id_operador}}</td>
+					<td>{{celda.sitio.direccion}}</td>
+					<td>{{celda.sitio.localidad}}</td>
+					<td>{{celda.sitio.provincia}}</td>
+				</tr> 
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	{% endif %}
+{% endblock %}

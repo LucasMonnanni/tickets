@@ -1,0 +1,416 @@
+{% extends 'tkts/base.html' %}
+{% block head %}
+<title>Sitio {{ sitio.sigla_id }} - Torresec</title>
+{% endblock %}
+{% block body %}
+<div class="container-lg">
+	<div class="row justify-content-lg-center my-5">
+		<div class="col-lg-10">
+			<div class='row mb-3'>
+				<div class="col-sm-8">
+					<h4>
+						{{ sitio.sigla_id }}
+						<small class="text-body-secondary">{{ sitio.nombre|title }}</small>
+					</h4>
+				</div>
+				<div class="col-sm-3 col-9">
+					<h5>{{sitio.estado|title}}</h5>
+				</div>
+				<div class="col-sm-1 col-3">
+					<a href='/admin/sitios/sitio/{{sitio.pk}}/change' class='link-body-emphasis'><i class='bi bi-pen' title='Editar' style="font-size: 1rem;"></i></a>
+				</div>
+			</div>
+			<div class='row mb-3 mx-0'>
+				<table class="table table-sm table-borderless">
+					<col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%">
+					<thead>
+						<th>Proyecto</th>
+						<th>Tipo</th>
+						<th>Estructura</th>
+						<th>Altura</th>
+					</thead>
+					<tr>
+						<td>{{sitio.proyecto|title}}</td>
+						<td>{{sitio.tipo}}</td>
+						<td>{{sitio.estructura}}</td>
+						<td>{{sitio.altura}}m</td>
+					</tr>
+				</table>
+			</div>
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#direccion" role="button" aria-expanded="false" aria-controls="direccion">
+						<i class='bi bi-chevron-down'></i>
+						Ubicación 
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="direccion">
+					<table class='table table-hover table-borderless table-sm'>
+						<tbody>
+							<thead>
+								<th>
+									Dirección
+								</th>
+								<th>
+									Localidad
+								</th>
+								<th>
+									Municipio
+								</th>
+								<th>
+									Provincia
+								</th>
+								<th>
+
+								</th>
+							</thead>
+							<tr>
+								<td>
+									{{ sitio.direccion|title }}
+								</td>
+								<td>
+									{{ sitio.localidad|title}}
+								</td>
+								<td>
+									{{ sitio.municipio|title}}
+								</td>
+								<td>
+									{{ sitio.provincia|title}}
+								</td>
+								<td>
+									<a href="https://www.google.com/maps/search/?api=1&query={{sitio.latitud|stringformat:".8f"}}%2C{{sitio.longitud|stringformat:".8f"}}" class='link-body-emphasis' target="_blank">GoogleMaps</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% if operadores %}
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#operadoresList" role="button" aria-expanded="false" aria-controls="operadoresList">
+						<i class='bi bi-chevron-down'></i>
+						Operadores 
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="operadoresList">
+					<table class='table table-hover table-borderless table-sm'>
+						<thead>
+							<th>
+								Operador
+							</th>
+							<th>
+								ID
+							</th>
+							<th>
+								Cell Owner
+							</th>
+							<th>
+								Teléfono
+							</th>
+						</thead>
+						<tbody>
+							{% for operador in operadores %}
+							<tr>
+								<td>
+									{{ operador.operador|title }}
+								</td>
+								<td>
+									{{ operador.id_operador }}
+								</td>
+								<td>
+									{{ operador.owner.nombre|title}} {{ operador.owner.apellido|title}}
+								</td>
+								<td>
+									{{ operador.owner.telefono }}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endif %}
+			{% if suministros %}
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#suministrosList" role="button" aria-expanded="false" aria-controls="suministrosList">
+						<i class='bi bi-chevron-down'></i>
+						Suministros 
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="suministrosList">
+					<table class='table table-hover table-borderless table-sm'>
+						<thead>
+							<th>
+								Titular
+							</th>
+							<th>
+								Distribuidora
+							</th>
+							<th>
+								Cuenta
+							</th>
+							<th>
+								Medidor
+							</th>
+							<th>
+								Dirección
+							</th>
+						</thead>
+						<tbody>
+							{% for suministro in suministros %}
+							<tr>
+								<td>
+									{{ suministro.titular|title }}
+								</td>
+								<td>
+									{{suministro.distribuidora|default:"-"}}
+								</td>
+								<td>
+									{{suministro.cuenta|default:"-"}}
+								</td>
+								<td>
+									{{suministro.medidor|default:"-"}}
+								</td>
+								<td>
+									{{suministro.direccion|default:"-"}}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endif %}
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#acceso" role="button" aria-expanded="false" aria-controls="acceso">
+						<i class='bi bi-chevron-down'></i>
+						Acceso 
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="acceso">
+					<table class='table table-hover table-borderless table-sm'>
+						<tbody>
+							<thead>
+								<th>
+									Tipo de Acceso
+								</th>
+								<th>
+									Candado Calle
+								</th>
+								<th>
+									Candado Sitio
+								</th>
+							</thead>
+							<tr>
+								<td>
+									{{ sitio.acceso|title }}
+								</td>
+								<td>
+									{{ sitio.candado_calle|title}}
+									{% if sitio.candado_calle == 'NUMÉRICO' and sitio.combinacion %} ({{sitio.combinacion}}){% endif %}
+								</td>
+								<td>
+									{{ sitio.candado_sitio|title}}
+									{% if sitio.candado_sitio == 'NUMÉRICO' and sitio.combinacion %} ({{sitio.combinacion}}){% endif %}
+								</td>
+							</tr>
+							{% if sitio.conflicto %}
+							<thead>
+								<th colspan=3 class="table-danger"> Conflicto </th>
+							</thead>
+							<tr>
+								<td colspan=3 class="table-danger">{{sitio.procedimiento}}</td>
+							</tr>
+							{% else %} 
+							<thead>
+								<th colspan=3>Procedimiento</th>
+							</thead>
+							<tr>
+								<td colspan=3>{{sitio.procedimiento|default:'-'}}</td>
+							</tr>
+							{% endif %}
+						</tbody>
+					</table>
+					
+				</div>
+			</div>
+			{% if mps %}
+			<div class="row my-3">
+				<div class='row row-collapsing justify-content-between'>
+					<div class='col-auto'>
+						<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#mpsList" role="button" aria-expanded="false" aria-controls="mpsList">
+							<i class='bi bi-chevron-down'></i>
+							Preventivos
+						</a>
+					</div>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="mpsList">
+					<table class='table table-hover table-borderless table-sm' id='mpsTable'>
+						<thead>
+							<th>
+								Fecha de Plan
+							</th>
+							<th>
+								Alcance
+							</th>
+							<th>
+								Estado
+							</th>
+							<th>
+								Enlace
+							</th>
+						</thead>
+						<tbody>
+							{% for mp in mps %}
+							<tr>
+								<td>
+									{{ mp.fecha_de_plan|date:"SHORT_DATE_FORMAT" }}
+								</td>
+								<td>
+									{{mp.alcance|title}}
+								</td>
+								<td>
+									{{mp.estado|title}}
+								</td>
+								<td>
+									<a href='{{mp.enlace}}' class='link-body-emphasis' target='_blank'>Ver reporte</a>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endif %}
+			{% if locadores %}
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#locadoresList" role="button" aria-expanded="false" aria-controls="locadoresList">
+						<i class='bi bi-chevron-down'></i>
+						Locadores 
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="locadoresList">
+					<table class='table table-hover table-borderless table-sm'>
+						<thead>
+							<th>
+								Nombre
+							</th>
+							<th>
+								Teléfono
+							</th>
+							<th>
+								Email
+							</th>
+							<th>
+								Relación
+							</th>
+						</thead>
+						<tbody>
+							{% for locador in locadores %}
+							<tr>
+								<td>
+									{{ locador.nombre|title }} {{ locador.apellido|title }}
+								</td>
+								<td>
+									{{locador.telefono|default:"-"}}
+								</td>
+								<td>
+									{{locador.email|default:"-"}}
+								</td>
+								<td>
+									{{locador.relacion|default:"-"}}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endif %}
+			{% regroup tickets by estado as tickets_por_estado %}
+			{% for estado, tkts in tickets_por_estado %}
+			<div class="row my-3">
+				<div class='row row-collapsing'>
+					<a class="fs-5 text-reset text-decoration-none collapsed" data-bs-toggle="collapse" href="#estado{{forloop.counter0}}List" role="button" aria-expanded="false" aria-controls="estado{{forloop.counter0}}List">
+						<i class='bi bi-chevron-down'></i>
+						{% if estado.acceso %} Accesos {% else %} Tickets {% endif %} {{estado.nombre_plural}}
+					</a>
+					<hr class="my-1">
+				</div>
+				<div class="row collapse justify-content-lg-center px-5" id="estado{{forloop.counter0}}List">
+					<table class='table table-hover table-borderless table-sm'>
+						<thead>
+							<th>
+								Ticket
+							</th>
+							<th>
+								Cliente
+							</th>
+							{% if not estado.acceso %}
+							<th>
+								Motivo
+							</th>
+							{% else %}
+							<th>
+								Desde
+							</th>
+							<th>
+								Hasta
+							</th>
+							{% endif %}
+							<th>
+								Inicio
+							</th>
+							<th>
+								Programada
+							</th>
+						</thead>
+						<tbody>
+							{% for tkt in tkts %}
+							<tr onclick='window.location = "{%url 'detalle' tkt.id %}"'>
+								<td>
+									{{ tkt.id }}
+								</td>
+								<td>
+									{{tkt.cliente|title}}
+								</td>
+								{% if not estado.acceso %}
+								<td>
+									{{tkt.motivo|title}}
+								</td>
+								{% else %}
+								<td>
+									{{tkt.acceso.fecha_desde|date:"SHORT_DATE_FORMAT"}}
+								</td>
+								<td>
+									{{tkt.acceso.fecha_hasta|date:"SHORT_DATE_FORMAT"}}
+								</td>
+								{% endif %}
+								<td>
+									{{tkt.inicio|date:"SHORT_DATE_FORMAT"}}
+								</td>
+								<td>
+									{{tkt.programada|date:"SHORT_DATE_FORMAT"}}
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}

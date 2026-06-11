@@ -1,0 +1,200 @@
+{% extends './base.html' %}
+{% block head %}
+    <title>Ticket N°: {{object.id}}</title>
+    <script>
+    async function copyLocationClicked(elem) {
+        try {
+            elem.classList.remove("link-body-emphasis");
+            elem.classList.add("link-success");
+            elem.title="Copiado!";
+            await navigator.clipboard.writeText(window.location.href);
+        } catch (e) {
+            elem.classList.remove("link-success");
+            elem.classList.add("link-danger");
+            elem.title="Copiar enlace";
+        }
+    }
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="container-xl my-5">
+        <div class="row py-2">
+            <div class="col-6">
+                <h4>Ticket N°: {{object.id}}</h4>
+            </div>
+        <div class="col-5">
+            <h4>{{object.estado.nombre_publico}}</h4>
+        </div>
+        <div class="col-1">
+        {% if user.is_authenticated %}
+            <a href='{% url 'detalle' object.id %}' class='link-body-emphasis'><i class='bi bi-book' title='Ver versión privada' style="font-size: 1.5rem;"></i></a>
+            {% else %}
+            <a class='link-body-emphasis' onclick='copyLocationClicked(this)'><i class='bi bi-link' title='Copiar enlace' style="font-size: 1.5rem;"></i></a>
+            {% endif %}
+        </div>
+        </div>
+        <div class="row py-2">
+            <h5>Ingresado por:</h5>
+            <p>{{object.nombre|title }}, correo: {{object.email}}, tel.: {{object.telefono}}, el día {{object.inicio|date:"SHORT_DATE_FORMAT"}}</p>
+        </div>
+        <div class="row py-2">
+            <div class="col-4">
+                <h5>Cliente: {{object.cliente|title}}</h5>
+            </div>
+            <div class="col-4">
+                <h5>Sitio: {{object.sitio.id|upper}}</h5>
+            </div>
+            <div class="col-4">
+                <h5>Motivo: {{object.motivo|title}}</h5>
+            </div>
+        </div>
+        {% if object.acceso %}
+        {% with object.acceso as acceso %}
+        <!-- Franja -->
+        <div class="row py-2">
+            <div class="col-4">
+                <h6>Fechas:</h6>
+                <span id="fechas-p">De <b>{{acceso.fecha_desde|date:"SHORT_DATE_FORMAT"}}</b> a <b>{{acceso.fecha_hasta|date:"SHORT_DATE_FORMAT"}}</b></span>
+            </div>
+            <div class="col-4">
+                <h6>Franja horaria</h6>
+                <span id="horas-p">De <b>{{acceso.hora_desde|date:"TIME_FORMAT"}}</b> a <b>{{acceso.hora_hasta|date:"TIME_FORMAT"}}</b></span>
+            </div>
+            <div class="col-4">
+                <h6>Empresa</h6>
+                <span id="empresa-p">{{ acceso.empresa }}</span>
+            </div>
+        </div>
+        <!-- Personal -->
+        <div class="row py-2">
+            <div class="col-md-12 col-xl-8">
+                <h5>Personal</h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless">
+                    {% if acceso.permiso_generado %}
+                        {% if acceso.personal_aprobado %}
+                        <thead>
+                            <tr>
+                                <th>Aprobado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="table"> 
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre Completo</th>
+                                                <th>Teléfono</th>
+                                                <th>Company ID</th>
+                                                <th>User Name</th>
+                                                <th>Password</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for persona in acceso.personal_aprobado  %}
+                                            <tr>
+                                                <td>{{ persona.nombre_completo }}</td>
+                                                <td>{{ persona.telefono }}</td>
+                                                <td>3105</td>
+                                                <td>{{ persona.dni }}</td>
+                                                <td>{{ persona.password }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endif %}
+                        {% if acceso.personal_no_aprobado %}
+                        <thead>
+                            <tr>
+                                <th>No aprobado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre Completo</th>
+                                                <th>DNI</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for persona in acceso.personal_no_aprobado  %}
+                                            <tr>
+                                                <td>{{ persona.nombre_completo }}</td>
+                                                <td>{{ persona.dni }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                        {% endif %}
+
+                    {% else %}
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>DNI</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for persona in acceso.personal.all %}
+                            <tr>
+                                <td>{{ persona.nombre }}</td>
+                                <td>{{ persona.apellido }}</td>
+                                <td>{{ persona.dni }}</td>
+                                <td>{{ persona.telefono }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row py-2">
+            <h5>Tareas a realizar:</h5>
+            <p class="pre">{{object.problema}}</p>
+        </div>
+        {% endwith %}
+        {% else %}
+        <div class="row py-2">
+            <h5>Detalle:</h5>
+            <p class="pre">{{object.problema}}</p>
+        </div>
+        {% endif %}
+        {% if object.solucion %}
+        <div class="row py-2">
+            <h5>Solución:</h5>
+            <p class="pre">{{object.solucion|default_if_none:' '}}</p>
+        </div>
+        {% endif %}
+        <div class="row py-2">
+            {% if object.programada %}
+            <div class="col-3">
+                <h5>Fecha Programada:</h5>
+            </div>
+            <div class="col-3">
+                {{object.programada|default_if_none:' '}}
+            </div>
+            {% endif %}
+            {% if object.cerrado %}
+            <div class="col-3">
+                <h5>Fecha de cierre:</h5>
+            </div>
+            <div class="col-3">
+                {{object.cierre|default_if_none:' '}}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
