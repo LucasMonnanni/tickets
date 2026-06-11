@@ -27,6 +27,8 @@ DATABASES = {
     }
 }
 
+MIDDLEWARE.append('tickets.middleware.AutoLoginMiddleware')
+
 # Avoid system-check failures when using demo captcha keys.
 RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY', 'test')
 RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY', 'test')
