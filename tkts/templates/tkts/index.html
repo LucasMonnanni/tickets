@@ -190,7 +190,7 @@
                                         <button type="button" class="btn btn-secondary" id="boton" onclick="
                                                 var id = document.getElementById('sitio_id').value
                                                 if (id > 0)    {
-                                                    window.location = '{% url 'sitio_detalle' %}?sigla=9999'.replace('9999/', id)
+                                                    window.location = '{% url 'sitio_detalle' 9999 %}'.replace('9999/', id)
                                                 } else {
                                                     window.alert('N° de sitio inválido')
                                                 }
