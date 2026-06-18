@@ -12,5 +12,5 @@ It also functions as a centralized database for the operations department, colle
 
 The backend is developed in Python using Django and an SQL database (SQLite3 in this case, MySQL in production).
 The frontend is based on Django templates, with plain JavaScript for dynamic functions and HTMX to handle asynchronous behavior.
-To illustrate how it works, you can access a demo with fictitious data. Calls to external APIs from the company’s providers have been removed for privacy reasons.
+To illustrate how it works, you can access a [demo](https://tickets-o7q6.onrender.com) with fictitious data. Calls to external APIs from the company’s providers have been removed for privacy reasons.
 
